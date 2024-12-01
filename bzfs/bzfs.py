@@ -646,7 +646,7 @@ as how many src snapshots and how many GB of data are missing on dst, etc.
              "*Note:* Use --delete-empty-dst-datasets=snapshots to delete snapshot-less datasets even if they still "
              "contain bookmarks.\n\n")
     cmp_choices_dflt = "+".join(cmp_choices_items)
-    cmp_choices = []
+    cmp_choices: List[str] = []
     for i in range(0, len(cmp_choices_items)):
         cmp_choices += map(lambda item: "+".join(item), itertools.combinations(cmp_choices_items, i + 1))
     parser.add_argument(
@@ -2828,7 +2828,7 @@ class Job:
             return
         # Unfortunately ZFS has no syntax yet to delete multiple bookmarks in a single CLI invocation
         p, log = self.params, self.params.log
-        log.info(p.dry(f"Deleting bookmark(s): %s"), dataset + "#" + ",".join(snapshot_tags))
+        log.info(p.dry("Deleting bookmark(s): %s"), dataset + "#" + ",".join(snapshot_tags))
         for i, snapshot_tag in enumerate(snapshot_tags):
             log.debug(p.dry(f"Deleting bookmark {i+1}/{len(snapshot_tags)}: %s"), snapshot_tag)
             cmd = p.split_args(f"{remote.sudo} {p.zfs_program} destroy", f"{dataset}#{snapshot_tag}")
@@ -3366,7 +3366,7 @@ class Job:
                 loc = "src" if rel_dataset in src_only else "dst" if rel_dataset in dst_only else "all"
                 src_dataset = src.root_dataset + rel_dataset if rel_dataset not in dst_only else ""
                 dst_dataset = dst.root_dataset + rel_dataset if rel_dataset not in src_only else ""
-                row = [loc, rel_dataset, src_dataset, dst_dataset]
+                row = loc, rel_dataset, src_dataset, dst_dataset
                 # Example: all /foo/bar tank1/src/foo/bar tank2/dst/foo/bar
                 if not p.dry_run:
                     fd.write("\t".join(row) + "\n")
